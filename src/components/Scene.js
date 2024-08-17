@@ -1,6 +1,19 @@
 import React, { useRef, useMemo } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree, extend } from '@react-three/fiber';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as THREE from 'three';
+
+extend({ OrbitControls });
+
+function CameraControls() {
+  const {
+    camera,
+    gl: { domElement },
+  } = useThree();
+  const controls = useRef();
+  useFrame(() => controls.current.update());
+  return <orbitControls ref={controls} args={[camera, domElement]} enableZoom={true} enablePan={true} />;
+}
 
 function MorphingShape() {
   const meshRef = useRef();
@@ -11,13 +24,13 @@ function MorphingShape() {
 
   const isMobile = size.width < 768;
 
-  const geometry = useMemo(() => new THREE.IcosahedronGeometry(3, isMobile ? 15 : 20), [isMobile]);
+  const geometry = useMemo(() => new THREE.IcosahedronGeometry(3, isMobile ? 10 : 20), [isMobile]);
   const originalPositions = useMemo(() => geometry.attributes.position.array.slice(), [geometry]);
   
   React.useEffect(() => {
     const aspect = size.width / size.height;
     if (aspect < 1) {
-      camera.position.z = 15; // Mobile
+      camera.position.z = 15; // Increased for better mobile view
     } else {
       camera.position.z = 8; // Desktop (unchanged)
     }
@@ -108,7 +121,7 @@ function MorphingShape() {
         specular="#ffffff"
         shininess={100}
         wireframe={true}
-        wireframeLinewidth={isMobile ? 3 : 2}
+        wireframeLinewidth={isMobile ? 1.5 : 2}
       />
     </mesh>
   );
@@ -158,6 +171,7 @@ function Scene() {
 
   return (
     <>
+      <CameraControls />
       <MorphingShape position={[0, 0, 0]} />
       <StarField count={size.width < 768 ? 2500 : 5000} />
       <ambientLight intensity={0.5} />
