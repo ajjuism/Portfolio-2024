@@ -28,9 +28,9 @@ function MorphingShape() {
   useEffect(() => {
     const aspect = size.width / size.height;
     if (aspect < 1) {
-      camera.position.z = 12;
+      camera.position.z = 10;
     } else {
-      camera.position.z = 12;
+      camera.position.z = 10;
     }
     camera.updateProjectionMatrix();
   }, [camera, size]);
