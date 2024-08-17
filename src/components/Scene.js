@@ -9,15 +9,17 @@ function MorphingShape() {
   const [dragOffset, setDragOffset] = React.useState(new THREE.Vector3());
   const { camera, size } = useThree();
 
-  const geometry = useMemo(() => new THREE.IcosahedronGeometry(3, 20), []);
+  const isMobile = size.width < 768;
+
+  const geometry = useMemo(() => new THREE.IcosahedronGeometry(3, isMobile ? 15 : 20), [isMobile]);
   const originalPositions = useMemo(() => geometry.attributes.position.array.slice(), [geometry]);
   
   React.useEffect(() => {
     const aspect = size.width / size.height;
     if (aspect < 1) {
-      camera.position.z = 12;
+      camera.position.z = 15; // Mobile
     } else {
-      camera.position.z = 8;
+      camera.position.z = 8; // Desktop (unchanged)
     }
     camera.updateProjectionMatrix();
   }, [camera, size]);
@@ -106,7 +108,7 @@ function MorphingShape() {
         specular="#ffffff"
         shininess={100}
         wireframe={true}
-        wireframeLinewidth={2}
+        wireframeLinewidth={isMobile ? 3 : 2}
       />
     </mesh>
   );
