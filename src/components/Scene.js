@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame, useThree, extend } from '@react-three/fiber';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as THREE from 'three';
@@ -6,33 +6,31 @@ import * as THREE from 'three';
 extend({ OrbitControls });
 
 function CameraControls() {
-  const {
-    camera,
-    gl: { domElement },
-  } = useThree();
+  const { camera, gl } = useThree();
   const controls = useRef();
   useFrame(() => controls.current.update());
-  return <orbitControls ref={controls} args={[camera, domElement]} enableZoom={true} enablePan={true} />;
+  return <orbitControls ref={controls} args={[camera, gl.domElement]} enableDamping dampingFactor={0.1} rotateSpeed={0.5} />;
 }
 
 function MorphingShape() {
   const meshRef = useRef();
   const geometryRef = useRef();
+  const materialRef = useRef();
   const [isDragging, setIsDragging] = React.useState(false);
   const [dragOffset, setDragOffset] = React.useState(new THREE.Vector3());
   const { camera, size } = useThree();
 
   const isMobile = size.width < 768;
 
-  const geometry = useMemo(() => new THREE.IcosahedronGeometry(3, isMobile ? 10 : 20), [isMobile]);
+  const geometry = useMemo(() => new THREE.IcosahedronGeometry(3, isMobile ? 16 : 20), [isMobile]);
   const originalPositions = useMemo(() => geometry.attributes.position.array.slice(), [geometry]);
   
-  React.useEffect(() => {
+  useEffect(() => {
     const aspect = size.width / size.height;
     if (aspect < 1) {
-      camera.position.z = 15; // Increased for better mobile view
+      camera.position.z = 15;
     } else {
-      camera.position.z = 8; // Desktop (unchanged)
+      camera.position.z = 8;
     }
     camera.updateProjectionMatrix();
   }, [camera, size]);
@@ -115,13 +113,14 @@ function MorphingShape() {
     >
       <bufferGeometry ref={geometryRef} attach="geometry" {...geometry} />
       <meshPhongMaterial
+        ref={materialRef}
         attach="material"
         color="#00ffff"
         emissive="#FFBF00"
         specular="#ffffff"
         shininess={100}
         wireframe={true}
-        wireframeLinewidth={isMobile ? 1.5 : 2}
+        wireframeLinewidth={isMobile ? 1 : 2}
       />
     </mesh>
   );
