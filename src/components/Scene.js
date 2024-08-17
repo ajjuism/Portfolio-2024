@@ -30,7 +30,7 @@ function MorphingShape() {
     if (aspect < 1) {
       camera.position.z = 12;
     } else {
-      camera.position.z = 8;
+      camera.position.z = 12;
     }
     camera.updateProjectionMatrix();
   }, [camera, size]);
