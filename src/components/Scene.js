@@ -28,7 +28,7 @@ function MorphingShape() {
   useEffect(() => {
     const aspect = size.width / size.height;
     if (aspect < 1) {
-      camera.position.z = 10;
+      camera.position.z = 11;
     } else {
       camera.position.z = 10;
     }
